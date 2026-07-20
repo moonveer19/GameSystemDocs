@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game System | Billionz Gaming — Legal Center</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+      }
+
+      #root {
+        min-height: 100vh;
+      }
+
+      .app {
+        min-height: 100vh;
+        transition: background-color 0.5s, color 0.5s;
+      }
+
+      .app.dark {
+        background-color: #08080a;
+        color: #f5f5f7;
+      }
+
+      .app.light {
+        background-color: #ffffff;
+        color: #0a0a0a;
+      }
+
+      .wrapper {
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* background accents */
+      .bg-accents {
+        pointer-events: none;
+        position: absolute;
+        inset: 0;
+        z-index: -10;
+      }
+
+      .blob {
+        position: absolute;
+        height: 24rem;
+        width: 24rem;
+        border-radius: 9999px;
+        filter: blur(64px);
+      }
+
+      .blob-1 {
+        top: -10rem;
+        left: -10rem;
+      }
+
+      .blob-2 {
+        top: 33.333333%;
+        right: -10rem;
+      }
+
+      .dark .blob {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+
+      .light .blob {
+        background-color: rgba(0, 0, 0, 0.05);
+      }
+
+      /* header */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        border-bottom: 1px solid;
+        backdrop-filter: blur(24px);
+      }
+
+      .dark header {
+        border-color: rgba(255, 255, 255, 0.1);
+        background-color: rgba(0, 0, 0, 0.4);
+      }
+
+      .light header {
+        border-color: rgba(0, 0, 0, 0.1);
+        background-color: rgba(255, 255, 255, 0.6);
+      }
+
+      .header-inner {
+        margin: 0 auto;
+        display: flex;
+        max-width: 72rem;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 1.5rem;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .brand-logo {
+        display: flex;
+        height: 2.5rem;
+        width: 2.5rem;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.75rem;
+        font-size: 1.125rem;
+        font-weight: 800;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -4px rgba(0, 0, 0, 0.1);
+      }
+
+      .dark .brand-logo {
+        background: linear-gradient(to bottom right, #ffffff, #a1a1aa);
+        color: #000000;
+      }
+
+      .light .brand-logo {
+        background: linear-gradient(to bottom right, #000000, #52525b);
+        color: #ffffff;
+      }
+
+      .brand-text {
+        line-height: 1.25;
+      }
+
+      .brand-title {
+        margin: 0;
+        font-size: 0.875rem;
+        font-weight: 700;
+        letter-spacing: 0.025em;
+      }
+
+      .brand-sub {
+        margin: 0;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+      }
+
+      .dark .brand-sub {
+        color: #a1a1aa;
+      }
+
+      .light .brand-sub {
+        color: #71717a;
+      }
+
+      .theme-toggle {
+        position: relative;
+        display: flex;
+        height: 2rem;
+        width: 3.5rem;
+        align-items: center;
+        border-radius: 9999px;
+        border: 1px solid;
+        padding: 0.25rem;
+        transition: background-color 0.2s, border-color 0.2s;
+        cursor: pointer;
+      }
+
+      .dark .theme-toggle {
+        border-color: rgba(255, 255, 255, 0.15);
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+
+      .light .theme-toggle {
+        border-color: rgba(0, 0, 0, 0.1);
+        background-color: rgba(0, 0, 0, 0.05);
+      }
+
+      .theme-toggle-knob {
+        display: flex;
+        height: 1.5rem;
+        width: 1.5rem;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+      }
+
+      .dark .theme-toggle-knob {
+        transform: translateX(1.5rem);
+        background: linear-gradient(to bottom right, #ffffff, #a1a1aa);
+        color: #000000;
+      }
+
+      .light .theme-toggle-knob {
+        transform: translateX(0);
+        background: linear-gradient(to bottom right, #000000, #52525b);
+        color: #ffffff;
+      }
+
+      /* hero */
+      main {
+        margin: 0 auto;
+        max-width: 72rem;
+        padding: 5rem 1.5rem 7rem;
+        text-align: center;
+      }
+
+      .badge {
+        margin: 0 auto 2rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        border-radius: 9999px;
+        border: 1px solid;
+        padding: 0.375rem 1rem;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+      }
+
+      .dark .badge {
+        border-color: rgba(255, 255, 255, 0.15);
+        color: #d4d4d8;
+      }
+
+      .light .badge {
+        border-color: rgba(0, 0, 0, 0.1);
+        color: #52525b;
+      }
+
+      .badge-dot {
+        height: 0.375rem;
+        width: 0.375rem;
+        border-radius: 9999px;
+      }
+
+      .dark .badge-dot {
+        background-color: #ffffff;
+      }
+
+      .light .badge-dot {
+        background-color: #000000;
+      }
+
+      h1 {
+        margin: 0 auto;
+        max-width: 56rem;
+        background-clip: text;
+        -webkit-background-clip: text;
+        font-size: 3rem;
+        font-weight: 800;
+        line-height: 1.05;
+        letter-spacing: -0.025em;
+        color: transparent;
+      }
+
+      .dark h1 {
+        background-image: linear-gradient(to bottom, #ffffff, #71717a);
+      }
+
+      .light h1 {
+        background-image: linear-gradient(to bottom, #000000, #71717a);
+      }
+
+      @media (min-width: 640px) {
+        h1 {
+          font-size: 3.75rem;
+        }
+      }
+
+      @media (min-width: 768px) {
+        h1 {
+          font-size: 4.5rem;
+        }
+      }
+
+      .subtitle {
+        margin: 1.5rem auto 0;
+        max-width: 42rem;
+        font-size: 1.125rem;
+        line-height: 1.75;
+      }
+
+      .dark .subtitle {
+        color: #a1a1aa;
+      }
+
+      .light .subtitle {
+        color: #52525b;
+      }
+
+      .cards {
+        margin: 4rem auto 0;
+        display: grid;
+        max-width: 48rem;
+        gap: 1.5rem;
+        grid-template-columns: 1fr;
+      }
+
+      @media (min-width: 640px) {
+        .cards {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      .card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        overflow: hidden;
+        border-radius: 1.5rem;
+        border: 1px solid;
+        padding: 2rem;
+        text-align: left;
+        text-decoration: none;
+        color: inherit;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+          0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, border-color 0.3s;
+      }
+
+      .card:hover {
+        transform: translateY(-0.25rem);
+      }
+
+      .dark .card {
+        border-color: rgba(255, 255, 255, 0.1);
+        background: linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0.06),
+          transparent
+        );
+      }
+
+      .dark .card:hover {
+        border-color: rgba(255, 255, 255, 0.25);
+      }
+
+      .light .card {
+        border-color: rgba(0, 0, 0, 0.1);
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.03), transparent);
+      }
+
+      .light .card:hover {
+        border-color: rgba(0, 0, 0, 0.25);
+      }
+
+      .card-icon {
+        display: flex;
+        height: 3rem;
+        width: 3rem;
+        align-items: center;
+        justify-content: center;
+        border-radius: 1rem;
+        font-size: 1.25rem;
+      }
+
+      .dark .card-icon {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .light .card-icon {
+        background-color: rgba(0, 0, 0, 0.05);
+      }
+
+      .card h2 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 700;
+      }
+
+      .card p {
+        margin-top: 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.625;
+      }
+
+      .dark .card p {
+        color: #a1a1aa;
+      }
+
+      .light .card p {
+        color: #52525b;
+      }
+
+      .card-link {
+        margin-top: 0.5rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        transition: transform 0.2s;
+      }
+
+      .card:hover .card-link {
+        transform: translateX(0.25rem);
+      }
+
+      .dark .card-link {
+        color: #ffffff;
+      }
+
+      .light .card-link {
+        color: #000000;
+      }
+
+      .hero-note {
+        margin-top: 3.5rem;
+        font-size: 0.75rem;
+        color: #71717a;
+      }
+
+      /* footer */
+      footer {
+        border-top: 1px solid;
+        padding: 2rem 1.5rem;
+        text-align: center;
+        font-size: 0.75rem;
+        color: #71717a;
+      }
+
+      .dark footer {
+        border-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .light footer {
+        border-color: rgba(0, 0, 0, 0.1);
+      }
+
+      footer a {
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .dark footer a {
+        color: #ffffff;
+      }
+
+      .light footer a {
+        color: #000000;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script>
+      (function () {
+        var isDark = true;
+
+        function render() {
+          var root = document.getElementById("root");
+
+          var appClass = "app " + (isDark ? "dark" : "light");
+          var wrapperBg1 = "blob blob-1";
+          var wrapperBg2 = "blob blob-2";
+
+          root.innerHTML =
+            '<div class="' +
+            appClass +
+            '">' +
+            '<div class="wrapper">' +
+            '<div class="bg-accents">' +
+            '<div class="' +
+            wrapperBg1 +
+            '"></div>' +
+            '<div class="' +
+            wrapperBg2 +
+            '"></div>' +
+            "</div>" +
+            "<header>" +
+            '<div class="header-inner">' +
+            '<div class="brand">' +
+            '<div class="brand-logo">B</div>' +
+            '<div class="brand-text">' +
+            '<p class="brand-title">Billionz Gaming</p>' +
+            '<p class="brand-sub">Game System</p>' +
+            "</div>" +
+            "</div>" +
+            '<button id="theme-toggle-btn" class="theme-toggle" aria-label="Toggle theme">' +
+            '<span class="theme-toggle-knob">' +
+            (isDark ? "☾" : "☀") +
+            "</span>" +
+            "</button>" +
+            "</div>" +
+            "</header>" +
+            "<main>" +
+            '<div class="badge">' +
+            '<span class="badge-dot"></span>' +
+            "Legal Center" +
+            "</div>" +
+            "<h1>Game System</h1>" +
+            '<p class="subtitle">' +
+            "Everything you need to know about how Billionz Gaming handles your " +
+            "data and the rules that govern your use of Game System — presented " +
+            "in one clean, fast, and fancy legal hub." +
+            "</p>" +
+            '<div class="cards">' +
+            '<a href="privacy-policy.html" target="_blank" rel="noreferrer" class="card">' +
+            '<div class="card-icon">🔒</div>' +
+            "<div>" +
+            "<h2>Privacy Policy</h2>" +
+            "<p>" +
+            "How we collect, use, store, and protect your information " +
+            "across Game System and related services." +
+            "</p>" +
+            "</div>" +
+            '<span class="card-link">Read policy →</span>' +
+            "</a>" +
+            '<a href="terms-and-conditions.html" target="_blank" rel="noreferrer" class="card">' +
+            '<div class="card-icon">📜</div>' +
+            "<div>" +
+            "<h2>Terms &amp; Conditions</h2>" +
+            "<p>" +
+            "The rules, responsibilities, and requirements for using the " +
+            "Game System application and its services." +
+            "</p>" +
+            "</div>" +
+            '<span class="card-link">Read terms →</span>' +
+            "</a>" +
+            "</div>" +
+            '<p class="hero-note">' +
+            "Both documents include their own built-in light / dark theme switch." +
+            "</p>" +
+            "</main>" +
+            '<footer>' +
+            "<p>" +
+            "© 2026 Billionz Gaming. All rights reserved. · " +
+            '<a href="mailto:billionzgamingsupport@gmail.com">' +
+            "billionzgamingsupport@gmail.com" +
+            "</a>" +
+            "</p>" +
+            "</footer>" +
+            "</div>" +
+            "</div>";
+
+          document
+            .getElementById("theme-toggle-btn")
+            .addEventListener("click", function () {
+              isDark = !isDark;
+              render();
+            });
+        }
+
+        render();
+      })();
+    </script>
+  </body>
+</html>
